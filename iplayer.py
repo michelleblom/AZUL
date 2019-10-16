@@ -312,6 +312,7 @@ class InteractivePlayer(Player):
                 break     
 
             else:
+                cont = True
                 print("Option not recognised. Repeating request.")
 
             if not cont:
