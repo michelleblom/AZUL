@@ -595,6 +595,16 @@ class GameRunner:
     def __init__(self, player_list, seed):
         random.seed(seed)
 
+        # Make sure we are forming a valid game, and that player
+        # id's range from 0 to N-1, where N is the number of players.
+        assert(len(player_list) <= 4)
+        assert(len(player_list) > 1)
+
+        i = 0
+        for plyr in player_list:
+            assert(plyr.id == i)    
+            i += 1
+
         self.game_state = GameState(len(player_list))
         self.players = player_list
 
@@ -614,7 +624,10 @@ class GameRunner:
                 moves = plr_state.GetAvailableMoves(self.game_state)
 
                 gs_copy = copy.deepcopy(self.game_state)
-                selected = self.players[i].SelectMove(moves, gs_copy)
+                moves_copy = copy.deepcopy(moves)
+                selected = self.players[i].SelectMove(moves_copy, gs_copy)
+
+                assert(ValidMove(selected, moves))
 
                 if log_state:
                     print("\nPlayer {} has chosen the following move:".format(
