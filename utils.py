@@ -28,6 +28,26 @@ class Move(IntEnum):
     TAKE_FROM_FACTORY = 1
     TAKE_FROM_CENTRE = 2
 
+# Bundle together a player's activity in the game for use in
+# updating a policy
+class PlayerTrace:
+    def __init__(self, pid):
+        # Player ID
+        self.id = pid
+
+        # Round by round move history
+        self.moves = []
+    
+        # Round by round scores
+        self.round_scores = []
+
+        # Bonus scores
+        self.bonuses = 0
+
+    def StartRound(self):
+        self.moves.append(list())
+        self.round_scores.append(0)
+        
 
 # Structure recording the number, type, and destination of tiles 
 # collected by a player. Note that the sum of 'num_to_pattern_line'
@@ -58,6 +78,11 @@ def SameTG(tg1, tg2):
 
     return True
 
+def ValidMove(c, moves):
+    for m in moves:
+        if c[0] == m[0] and c[1] == m[1] and SameTG(c[2],m[2]):
+            return True
+    return False
 
 def TileToString(tile):
     if tile == Tile.RED:

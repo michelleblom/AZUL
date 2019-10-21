@@ -71,6 +71,8 @@ class PlayerState:
         self.lines_number = [0]*self.GRID_SIZE
         self.lines_tile = [-1]*self.GRID_SIZE
 
+        self.player_trace = PlayerTrace(_id)
+
         #self.grid_scheme = [
         #    [Tile.BLUE,Tile.YELLOW,Tile.RED,Tile.BLACK,Tile.WHITE],
         #    [Tile.WHITE,Tile.BLUE,Tile.YELLOW,Tile.RED,Tile.BLACK],
@@ -402,6 +404,8 @@ class PlayerState:
             score_change = -self.score
         
         self.score += score_change
+        self.player_trace.round_scores[-1] = score_change
+
         return (self.score, used_tiles) 
 
 
@@ -414,6 +418,8 @@ class PlayerState:
 
         bonus = (rows * self.ROW_BONUS) + (cols * self.COL_BONUS) + \
             (sets * self.SET_BONUS)
+
+        self.player_trace.bonuses = bonus
         self.score += bonus
         return bonus 
 
@@ -512,6 +518,9 @@ class GameState:
         self.first_player = self.next_first_player
         self.next_first_player = -1
 
+        for plr in self.players:
+            plr.player_trace.StartRound()
+
 
     # Execute end of round actions (scoring and clean up)
     def ExecuteEndOfRound(self):
@@ -525,6 +534,7 @@ class GameState:
     # Execute move by given player
     def ExecuteMove(self, player_id, move):
         plr_state = self.players[player_id]
+        plr_state.player_trace.moves[-1].append(move)
 
         # The player is taking tiles from the centre
         if move[0] == Move.TAKE_FROM_CENTRE: 
@@ -618,6 +628,9 @@ class GameRunner:
             player_order.append(i)
 
         game_continuing = True
+        for plr in self.game_state.players:
+            plr.player_trace.StartRound()
+
         while game_continuing:
             for i in player_order:
                 plr_state = self.game_state.players[i]
@@ -677,11 +690,11 @@ class GameRunner:
             print("THE GAME HAS ENDED")
 
         # Score player bonuses
-        scores = {}
+        player_traces = {}
         for i in player_order:
             plr_state = self.game_state.players[i]
             plr_state.EndOfGameScore()
-            scores[i] = plr_state.score
+            player_traces[i] = (plr_state.score, plr_state.player_trace)
     
         # Return scores
-        return scores
+        return player_traces

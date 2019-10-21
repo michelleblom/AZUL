@@ -16,15 +16,26 @@
 from model import GameRunner,Player
 from iplayer import InteractivePlayer
 from naive_player import NaivePlayer
-
+from utils import *
 
 players = [InteractivePlayer(0), NaivePlayer(1), NaivePlayer(2),NaivePlayer(3)]
 
 gr = GameRunner(players, 1384754856864)
 
-scores = gr.Run(True)
+activity = gr.Run(True)
 
-print("Player 0 score is {}".format(scores[0]))
-print("Player 1 score is {}".format(scores[1]))
-print("Player 2 score is {}".format(scores[2]))
-print("Player 3 score is {}".format(scores[3]))
+print("Player 0 score is {}".format(activity[0][0]))
+print("Player 1 score is {}".format(activity[1][0]))
+print("Player 2 score is {}".format(activity[2][0]))
+print("Player 3 score is {}".format(activity[3][0]))
+
+
+#print("Player 0 round-by-round activity")
+#player_trace = activity[0][1]
+#for r in range(len(player_trace.moves)):
+#    print("ROUND {}".format(r+1))
+#    for move in player_trace.moves[r]:
+#        print(MoveToString(0, move))
+#    print("Score change {}".format(player_trace.round_scores[r]))
+
+#print("Bonus points {}".format(player_trace.bonuses))
